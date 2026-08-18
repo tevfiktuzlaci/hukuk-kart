@@ -46,6 +46,25 @@
     color:var(--muhur);border-radius:100px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
   }
 
+  .geri-tus{
+    width:auto;flex:0 0 auto;padding:5px 11px 6px;font-size:13px;font-weight:500;
+    border:1.5px solid var(--cizgi);color:var(--soluk);border-radius:100px;line-height:1;
+  }
+  .geri-tus:hover{border-color:var(--murekkep);color:var(--murekkep)}
+  .sol{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+  .sonuc-rozet{
+    display:inline-block;padding:3px 9px 4px;border-radius:100px;border:1.5px solid;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.04em;
+  }
+  .r-bildim{border-color:var(--yesil);color:var(--yesil)}
+  .r-yarim{border-color:var(--soluk);color:var(--soluk)}
+  .r-bilemedim{border-color:var(--alev);color:var(--alev)}
+  .gecmis-baslik{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;
+  }
+  .ikili{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .ikili button:disabled{opacity:.32;cursor:default}
+
   /* ---------- cetele (imza ogesi) ---------- */
   .cetele-alan{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:1;overflow:hidden}
   .cetele{display:flex;gap:9px;align-items:flex-end;justify-content:flex-end;height:22px;flex-wrap:nowrap;overflow:hidden;direction:rtl}
@@ -245,7 +264,9 @@ function basla(){
     arka: false,
     yazi: "",
     kirik: false,
-    mesaj: ""
+    mesaj: "",
+    gecmis: [],
+    bakis: null
   };
   ciz();
 }
@@ -292,9 +313,82 @@ function girisEkrani(){
        <div><b>02</b><span>Kimse cevabını kontrol etmiyor. Farklı kelimelerle doğru yazmak serbest.</span></div>
        <div><b>03</b><span>Üst üste bildiklerin çetele olarak birikir. Bir yanlış çeteleyi siler.</span></div>
        <div><b>04</b><span>Bilemediğin kartlar seansın sonunda bir kez daha gelir.</span></div>
+       <div><b>05</b><span>Geçtiğin kartlara "geri" ile bakabilirsin — bakmak serbest, puan değişmez.</span></div>
      </div>
      <button class="dolu" onclick="basla()">Desteyi aç</button>
    </div>`;
+}
+
+function cevapHtml(k){
+  const not = k.not ? `<div class="not">${kacir(k.not)}</div>` : "";
+  const satirlar = k.a.map(s=>{
+    const m = s.match(/^(\d+)\.\s+(.*)$/);
+    return m ? `<div class="madde"><span>${m[1]}</span><span>${kacir(m[2])}</span></div>`
+             : `<p>${kacir(s)}</p>`;
+  }).join("");
+  return `<div class="cevap">${not}${satirlar}</div>`;
+}
+
+const ROZET = {
+  bildim:    ["bildim",    "r-bildim"],
+  yarim:     ["yarım",     "r-yarim"],
+  bilemedim: ["bilemedim", "r-bilemedim"]
+};
+
+function gecmisEkrani(){
+  const g = S.gecmis[S.bakis];
+  const k = g.k;
+  const [yazi, sinif] = ROZET[g.sonuc];
+  const senin = g.yazi.trim()
+    ? `<div class="senin"><div class="etiket">senin cevabın</div><div class="metin">${kacir(g.yazi.trim())}</div></div>`
+    : "";
+
+  el.innerHTML = `
+    <div class="serit">
+      <div class="sol">
+        <div class="ilerleme">geçmiş · <b>${S.bakis+1}</b> / ${S.gecmis.length}</div>
+      </div>
+      <div class="cetele-alan"><div class="kombo-yazi">puan değişmez</div></div>
+    </div>
+    <div class="sahne">
+      <div class="kart arka" id="kart">
+        <div class="kart-no">${k.n}</div>
+        <div class="gecmis-baslik">
+          <div class="etiket" style="margin:0">soru</div>
+          <span class="sonuc-rozet ${sinif}">${yazi}</span>
+        </div>
+        <div class="soru">${kacir(k.q)}</div>
+        <div class="ayrac"></div>
+        ${senin}
+        <div class="etiket">cevap</div>
+        ${cevapHtml(k)}
+      </div>
+    </div>
+    <div class="dip">
+      <div class="ikili">
+        <button onclick="gecmisGez(-1)" ${S.bakis === 0 ? "disabled" : ""}>‹ daha eski</button>
+        <button onclick="gecmisGez(1)" ${S.bakis === S.gecmis.length-1 ? "disabled" : ""}>daha yeni ›</button>
+      </div>
+      <button class="dolu" onclick="gecmistenCik()">Kaldığım yere dön</button>
+    </div>`;
+  window.scrollTo(0,0);
+}
+
+function gecmiseGit(){
+  const t = document.getElementById("yazi");
+  if(t) S.yazi = t.value;
+  S.bakis = S.gecmis.length - 1;
+  ciz();
+}
+function gecmisGez(yon){
+  const y = S.bakis + yon;
+  if(y < 0 || y >= S.gecmis.length) return;
+  S.bakis = y;
+  gecmisEkrani();
+}
+function gecmistenCik(){
+  S.bakis = null;
+  ciz();
 }
 
 function kartEkrani(){
@@ -317,19 +411,13 @@ function kartEkrani(){
     const senin = S.yazi.trim()
       ? `<div class="senin"><div class="etiket">senin cevabın</div><div class="metin">${kacir(S.yazi.trim())}</div></div>`
       : "";
-    const not = k.not ? `<div class="not">${kacir(k.not)}</div>` : "";
-    const satirlar = k.a.map(s=>{
-      const m = s.match(/^(\d+)\.\s+(.*)$/);
-      return m ? `<div class="madde"><span>${m[1]}</span><span>${kacir(m[2])}</span></div>`
-               : `<p>${kacir(s)}</p>`;
-    }).join("");
     govde = `
       <div class="etiket">soru</div>
       <div class="soru">${kacir(k.q)}</div>
       <div class="ayrac"></div>
       ${senin}
       <div class="etiket">cevap</div>
-      <div class="cevap">${not}${satirlar}</div>`;
+      ${cevapHtml(k)}`;
     dip = `
       <div class="uclu">
         <button class="b-bilemedim" onclick="degerlendir('bilemedim')">bilemedim</button>
@@ -341,7 +429,10 @@ function kartEkrani(){
 
   el.innerHTML = `
     <div class="serit">
-      <div class="ilerleme"><b>${S.i+1}</b> / ${toplam}${rozet}</div>
+      <div class="sol">
+        ${S.gecmis.length ? `<button class="geri-tus" onclick="gecmiseGit()" aria-label="önceki karta bak">‹ geri</button>` : ""}
+        <div class="ilerleme"><b>${S.i+1}</b> / ${toplam}${rozet}</div>
+      </div>
       ${ceteleHtml()}
     </div>
     <div class="sahne">
@@ -374,7 +465,10 @@ function bitisEkrani(){
        <div><div class="n">${S.bilemedim}</div><div class="e">bilemedim</div></div>
      </div>
      <div class="rekor">en yüksek kombo — <b>${S.rekor}</b></div>
-     <button class="dolu" onclick="basla()">Yeniden başla</button>
+     <div style="display:flex;flex-direction:column;gap:9px">
+       <button class="dolu" onclick="basla()">Yeniden başla</button>
+       <button onclick="gecmiseGit()">Kartlara geri bak</button>
+     </div>
    </div>`;
 }
 
@@ -397,6 +491,11 @@ function cevir(){
 function degerlendir(sonuc){
   S.kirik = false;
   S.mesaj = "";
+  S.gecmis.push({
+    k: S.faz === "ana" ? S.sira[S.i] : S.tekrar[S.i],
+    yazi: S.yazi,
+    sonuc: sonuc
+  });
 
   if(sonuc === "bildim"){
     S.bildim++;
@@ -430,6 +529,7 @@ function degerlendir(sonuc){
 
 function ciz(){
   if(!S.faz) return girisEkrani();
+  if(S.bakis !== null && S.bakis !== undefined) return gecmisEkrani();
   if(S.faz === "bitti") return bitisEkrani();
   kartEkrani();
   window.scrollTo(0,0);
