@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hukuk kart destesi</title>
+<meta name="theme-color" content="#DEDCD6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kart destesi">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --kagit:#DEDCD6;
+    --kart:#FFFFFF;
+    --murekkep:#17171B;
+    --soluk:#6B6960;
+    --cizgi:#CFCCC4;
+    --muhur:#2E3192;
+    --alev:#D8401A;
+    --yesil:#3F6B38;
+    --r:3px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    background:var(--kagit);
+    color:var(--murekkep);
+    font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+    display:flex;justify-content:center;
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  #app{
+    width:100%;max-width:560px;
+    display:flex;flex-direction:column;
+    padding:14px 16px 18px;min-height:100dvh;
+  }
+
+  /* ---------- ust serit ---------- */
+  .serit{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;min-height:34px}
+  .ilerleme{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;color:var(--soluk);white-space:nowrap}
+  .ilerleme b{color:var(--murekkep);font-weight:500}
+  .tekrar-rozet{
+    display:inline-block;margin-left:8px;padding:1px 6px;border:1px solid var(--muhur);
+    color:var(--muhur);border-radius:100px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  }
+
+  /* ---------- cetele (imza ogesi) ---------- */
+  .cetele-alan{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:1;overflow:hidden}
+  .cetele{display:flex;gap:9px;align-items:flex-end;justify-content:flex-end;height:22px;flex-wrap:nowrap;overflow:hidden;direction:rtl}
+  .grup{position:relative;width:26px;height:20px;flex:0 0 auto}
+  .grup svg{position:absolute;inset:0;overflow:visible}
+  .grup path{
+    stroke:var(--murekkep);stroke-width:2.1;stroke-linecap:round;fill:none;
+    stroke-dasharray:24;stroke-dashoffset:24;
+    animation:ciz .22s ease-out forwards;
+  }
+  @keyframes ciz{to{stroke-dashoffset:0}}
+  .kombo-yazi{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.05em;
+    color:var(--soluk);height:14px;text-align:right;
+  }
+  .sicak .grup path{stroke:var(--alev)}
+  .sicak .kombo-yazi{color:var(--alev)}
+  .kirildi .grup path{stroke:var(--cizgi);animation:sil .3s ease-in forwards}
+  @keyframes sil{to{opacity:0;transform:translateY(6px) rotate(3deg)}}
+
+  /* ---------- kart ---------- */
+  .sahne{flex:1;display:flex;align-items:center;perspective:1400px;padding:16px 0}
+  .kart{
+    width:100%;background:var(--kart);border-radius:var(--r);
+    box-shadow:0 1px 2px rgba(30,26,18,.10), 0 10px 26px -12px rgba(30,26,18,.30);
+    padding:26px 24px 24px;position:relative;
+    transform:rotateY(0deg);transition:transform .19s ease-in;
+    backface-visibility:hidden;
+  }
+  .kart.yarim{transform:rotateY(90deg)}
+  .kart-no{
+    position:absolute;top:14px;right:16px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;color:var(--soluk);
+  }
+  .etiket{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--soluk);margin-bottom:12px;
+  }
+  .soru{font-size:20px;line-height:1.34;font-weight:600;letter-spacing:-.011em;text-wrap:pretty}
+  .kart.arka .soru{font-size:15px;font-weight:500;color:var(--soluk);line-height:1.4}
+
+  .yazi-alan{margin-top:20px}
+  textarea{
+    width:100%;min-height:92px;resize:vertical;background:transparent;
+    border:none;border-bottom:1.5px solid var(--cizgi);border-radius:0;
+    font-family:"Source Serif 4",Georgia,serif;font-size:16px;line-height:1.65;
+    color:var(--murekkep);padding:2px 0 8px;outline:none;
+  }
+  textarea:focus{border-bottom-color:var(--muhur)}
+  textarea::placeholder{color:#B4B0A6}
+
+  .ayrac{height:1px;background:var(--cizgi);margin:20px 0 18px}
+  .senin{margin-bottom:18px}
+  .senin .metin{
+    font-family:"Source Serif 4",Georgia,serif;font-size:15px;line-height:1.6;
+    white-space:pre-wrap;color:var(--soluk);
+    border-left:2px solid var(--cizgi);padding-left:12px;
+  }
+  .cevap{font-family:"Source Serif 4",Georgia,serif;font-size:17px;line-height:1.6}
+  .cevap p{margin-bottom:9px}
+  .cevap p:last-child{margin-bottom:0}
+  .cevap .madde{display:flex;gap:10px;margin-bottom:7px}
+  .cevap .madde span:first-child{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;color:var(--muhur);
+    flex:0 0 auto;padding-top:2px;
+  }
+  .cevap .not{font-size:15px;color:var(--soluk);font-style:italic;margin-bottom:12px}
+
+  /* ---------- dugmeler ---------- */
+  .dip{display:flex;flex-direction:column;gap:9px}
+  button{
+    font-family:inherit;font-size:15px;font-weight:600;letter-spacing:-.005em;
+    border:1.5px solid var(--murekkep);background:transparent;color:var(--murekkep);
+    padding:14px 16px;border-radius:var(--r);cursor:pointer;width:100%;
+    transition:background .12s,color .12s,transform .06s;
+  }
+  button:active{transform:translateY(1px)}
+  button:focus-visible{outline:2.5px solid var(--muhur);outline-offset:2px}
+  .dolu{background:var(--murekkep);color:var(--kagit)}
+  .uclu{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .uclu button{font-size:14px;padding:14px 4px}
+  .b-bildim{border-color:var(--yesil);color:var(--yesil)}
+  .b-bildim:hover{background:var(--yesil);color:#fff}
+  .b-yarim{border-color:var(--soluk);color:var(--soluk)}
+  .b-yarim:hover{background:var(--soluk);color:#fff}
+  .b-bilemedim{border-color:var(--alev);color:var(--alev)}
+  .b-bilemedim:hover{background:var(--alev);color:#fff}
+  .ipucu{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;color:var(--soluk);
+    text-align:center;letter-spacing:.03em;
+  }
+
+  /* ---------- giris / bitis ---------- */
+  .orta{flex:1;display:flex;flex-direction:column;justify-content:center;gap:26px;padding:20px 0}
+  h1{font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1.06}
+  h1 em{font-style:normal;color:var(--muhur)}
+  .alt{font-family:"Source Serif 4",Georgia,serif;font-size:17px;line-height:1.55;color:var(--soluk);max-width:34ch}
+  .kural{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--cizgi);padding-top:18px}
+  .kural div{display:flex;gap:12px;font-size:14px;line-height:1.45;color:var(--soluk)}
+  .kural b{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:400;color:var(--muhur);
+    flex:0 0 18px;font-size:12px;padding-top:2px;
+  }
+  .sayilar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--cizgi);border:1px solid var(--cizgi)}
+  .sayilar div{background:var(--kagit);padding:14px 10px;text-align:center}
+  .sayilar .n{font-size:26px;font-weight:700;letter-spacing:-.02em}
+  .sayilar .e{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--soluk);margin-top:3px}
+  .rekor{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;color:var(--murekkep)}
+  .rekor b{color:var(--alev);font-weight:500}
+
+  @media (max-width:400px){
+    .soru{font-size:18px}
+    h1{font-size:29px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .kart{transition:none}
+    .grup path{animation:none;stroke-dashoffset:0}
+    .kirildi .grup path{animation:none;opacity:0}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const DESTE = [
+ {n:1,q:"Derhal fesih hakkını kullanma süresi ne kadardır?",a:["6 iş günü – 1 yıl"]},
+ {n:2,q:"İş müfettişleri tarafından düzenlenen rapor ve tutanaklara nereye, ne kadar sürede itiraz edilir?",a:["İş mahkemesine, 30 gün içinde"]},
+ {n:3,q:"İhbar tazminatı alacaklarında hangi faiz uygulanır?",a:["Kanuni (yasal) faiz"]},
+ {n:4,q:"Fesih bildirim süreleri nelerdir?",a:["6 aydan az: 2 hafta","6 ay – 1,5 yıl: 4 hafta","1,5 – 3 yıl: 6 hafta","3 yıldan fazla: 8 hafta"]},
+ {n:5,q:"İşçinin aylık ücretinin ne kadarından fazlası haczedilemez veya başkasına devir ve temlik olunamaz?",a:["1/4’ünden fazlası"]},
+ {n:6,q:"Bir işyerinde toplu işçi çıkarma sayılması için işçi sayısına göre en az kaç işçi çıkarılmalıdır?",a:["20 – 100 işçi: en az 10 işçi","101 – 300 işçi: en az %10 işçi","301 ve daha fazla: en az 30 işçi"]},
+ {n:7,q:"İş Kanunu’nun uygulanmadığı işler hangileridir? (9 madde)",a:["1. Deniz ve hava taşıma işleri","2. 50’den az işçi çalıştırılan (50 dâhil) tarım ve orman işleri","3. Aile ekonomisi sınırındaki tarımsal yapı işleri","4. Aile üyeleri ve 3. dereceye kadar hısımlar arasında evlerde yapılan el sanatları","5. Ev hizmetleri","6. Çıraklar","7. Sporcular","8. Rehabilite edilenler","9. 507 sayılı Kanun’a uygun üç kişinin çalıştığı işyerleri"]},
+ {n:8,q:"Kapsam dışı olsa da İş Kanunu’na tabi olan işler hangileridir? (6 madde)",a:["1. Kıyı, liman ve iskelelerde gemilere yükleme-boşaltma","2. Havacılığın bütün yer tesislerindeki işler","3. Tarım sanatları ile tarım aletleri, makine ve parçalarının yapıldığı atölye ve fabrikalar","4. Tarım işletmelerindeki yapı işleri","5. Halka açık veya işyeri eklentisi park-bahçe işleri","6. Deniz İş Kanunu kapsamına girmeyen su ürünleri üreticileriyle ilgili işler"]},
+ {n:9,q:"Mutlak boşanma nedenleri nedir, hangileridir? (5 madde)",not:"Olayın ispatı boşanma kararı için yeterlidir. Hâkim ortak hayatın bitip bitmediğini sormaz. Kanunda sınırlı sayıda yer alır.",a:["1. Zina (aldatma)","2. Hayata kast","3. Pek kötü veya onur kırıcı davranış","4. Terk (evi bırakıp gitme)","5. Üç yıl süren fiili (eylemli) ayrılık"]},
+ {n:10,q:"Nispi boşanma nedenleri nedir, hangileridir? (3 madde)",not:"Olayın varlığı tek başına yetmez. Evlilik birliğinin temelinden sarsıldığı ayrıca ispatlanmalıdır. Hâkim ortak hayatın çekilmez hâle gelip gelmediğini inceler.",a:["1. Suç işleme ve haysiyetsiz hayat sürme","2. Akıl hastalığı","3. Evlilik birliğinin temelinden sarsılması (şiddetli geçimsizlik)"]},
+ {n:11,q:"En az %70 oranında engelli veya süreğen hastalığı olan çocuğun tedavisi için işçiye bir yıl içinde ne kadar ücretli mazeret izni verilir, hangi şartlarla?",a:["Bir yıl içinde toptan veya bölümler hâlinde 10 güne kadar ücretli mazeret izni.","Şartlar: çocuğun en az %70 oranında engelli veya süreğen hastalığı olması; çalışan ebeveynden sadece biri tarafından kullanılması; rapor sunulması"]},
+ {n:12,q:"Doğru mu, yanlış mı? Emziren kadının çocuğuna süt verme amacıyla geçirdiği süre günlük çalışma süresinden sayılır.",a:["Doğru"]},
+ {n:13,q:"İbra sözleşmesinin geçerlilik şartları nelerdir? (5 şart)",a:["1. Yazılı şekil — sözlü veya yazısız ibra geçersizdir","2. Bir aylık bekleme süresi — sözleşmenin sona erdiği tarihten itibaren en az bir ay geçmeli; fesih günü veya hemen sonrasında imzalananlar hükümsüzdür","3. Alacağın türü ve miktarı — hangi alacağın (kıdem, fazla mesai, yıllık izin) ödendiği ve tutarı rakamla açıkça yazılmalı; “her türlü alacağım kalmadı” gibi genel ifadeler geçersizdir","4. Banka aracılığıyla ödeme — ödeme, hak tutarına nazaran noksansız ve işçinin banka hesabına yapılmalı","5. Özgür irade — işçi imza atarken hile, baskı, tehdit veya hata altında olmamalı"]},
+ {n:14,q:"Yıllık izin ücretine ilişkin zamanaşımı ne zaman başlar?",a:["İş sözleşmesinin sona erdiği tarihten itibaren"]},
+ {n:15,q:"4857 sayılı İş Kanunu’na göre kısmi süreli (part-time) çalışma sayılabilmesi için haftalık çalışma süresi, tam süreli çalışmanın (45 saat) ne kadarı olmalıdır?",a:["En fazla üçte ikisi, yani 30 saat veya daha az"]},
+ {n:16,q:"4857 sayılı İş Kanunu’nun 92. maddesine göre iş müfettişlerinin görevleri sırasında tuttuğu tutanakların ispat gücü nedir?",a:["Aksi kanıtlanıncaya kadar geçerlidir. Tutanaklardaki tespitler doğru kabul edilir; çürütmek için karşı tarafın eşdeğer delillerle aksini ispatlaması gerekir."]},
+ {n:17,q:"Fazla çalışma süresi toplamı bir yılda en fazla ne kadar olabilir?",a:["270 saat"]},
+ {n:18,q:"Fazla çalışma sebebiyle hak edilen serbest zaman ne kadar süre içinde kullanılabilir?",a:["6 ay içinde"]},
+ {n:19,q:"Doğru mu, yanlış mı? Tüzel kişiliğin birleşme, katılma ya da tür değiştirmesiyle sona ermesi hâlinde birlikte sorumluluk hükümleri uygulanmaz.",a:["Doğru"]},
+ {n:20,q:"İşçinin kasten verdiği zararlar ücretin hangi kısmı kadar takas edilebilir?",a:["Ücretin haczedilebilir kısmı kadar"]},
+ {n:21,q:"İşverenin iş akdini haklı nedenle feshedebilmesi için işçinin işyerindeki mallara ne kadar zarar vermesi gerekir?",a:["Otuz günlük ücreti tutarıyla ödeyemeyecek derecede hasar ve kayba uğratması"]},
+ {n:22,q:"Hastalık veya kaza nedeniyle bekleme süresi ne kadardır?",a:["İşçinin bildirim süresi + 6 hafta"]},
+ {n:23,q:"Nafaka alacaklarında dörtte bir kuralı uygulanır mı?",a:["Uygulanmaz"]},
+ {n:24,q:"Biyolojik veya işin niteliğine ilişkin sebepler zorunlu kılıyorsa gebe ve kadına yapılan ayrımcılık eşitlik ilkesine aykırı mıdır?",a:["Aykırı değildir"]},
+ {n:25,q:"Süreksiz iş nedir?",a:["En fazla otuz iş günü süren iştir"]},
+ {n:26,q:"Bildirim süreleri asgari midir, artırılabilir mi?",a:["Asgaridir; sözleşme ile artırılabilir"]},
+ {n:27,q:"İş güvencesinden yararlanma hükümleri işçi lehine değiştirilebilir mi?",a:["İşçi lehine hafifletilebilir ya da kaldırılabilir"]},
+ {n:28,q:"İş kazasına bağlı maddi ve manevi tazminatta zamanaşımı ne kadardır?",a:["10 yıl"]},
+ {n:29,q:"Hangi alacaklarda zamanaşımı 5 yıldır? (6 kalem)",a:["1. Yıllık izin ücreti","2. Kıdem tazminatı","3. Ücret","4. Bildirimsiz fesih tazminatı","5. Kötü niyet tazminatı","6. Eşit davranma ilkesine aykırılık tazminatı"]},
+ {n:30,q:"4857 sayılı İş Kanunu kapsamında iş güvencesinden yararlanabilmek için hangi şartlar gerekir? (4 şart)",a:["1. İşçinin en az 6 ay kıdeminin olması","2. İşyerinde 30 veya daha fazla işçi çalışması","3. Sözleşmenin belirsiz süreli olması","4. İşçinin işveren vekili konumunda bulunmaması","Yer altı işlerinde 6 ay kıdem şartı aranmaz."]},
+ {n:31,q:"Aynı işverenin işyerinde İş Kanunu kapsamına girmeksizin geçirilen süreler yıllık izin bakımından dikkate alınır mı?",a:["Evet, yıllık izin bahsine dâhil edilir"]},
+ {n:32,q:"Yıllık izin kurulu oluşturma zorunluluğu kaç işçiden sonra doğar?",a:["100 işçiyi aşınca"]},
+ {n:33,q:"Toplu izin hangi tarihler arasında yapılabilir?",a:["Nisan başı – Ekim sonu arasında"]},
+ {n:34,q:"Karşılıklı ve anlaşarak mevcut işi sona erdirme sözleşmesinin adı nedir?",a:["Fesih sözleşmesi değil, ikale sözleşmesidir"]},
+ {n:35,q:"İşten herhangi bir nedenle ayrılan işçiye talebi hâlinde verilen çalışma belgesinin özellikleri nelerdir?",a:["Resim ve harçtan muaftır. Yanlış bilgi varsa yeni işveren bunun için tazminat talep edebilir."]},
+ {n:36,q:"Lojman işyeri kapsamında mıdır?",a:["Değildir"]},
+ {n:37,q:"Yüzde usulü ile çalışmada kıdem tazminatı hesabı neye göre yapılır?",a:["İşçinin son bir yıllık ücret ortalamasına göre"]},
+ {n:38,q:"Eşit işlem borcuna aykırılığı ispatla kim yükümlüdür?",a:["İşçi"]},
+ {n:39,q:"Kötü niyet tazminatı ne kadardır?",a:["İhbar tazminatının üç katı kadardır"]},
+ {n:40,q:"İşveren sağlık sebepleri, zorlayıcı sebepler veya işçinin gözaltına alınması sebepleriyle haklı nedenle fesih yaparsa işçi kıdem tazminatına hak kazanır mı?",a:["Evet, kıdem tazminatına hak kazanır"]}
+];
+
+const MESAJ = [
+  {n:3,  t:"üç üst üste"},
+  {n:5,  t:"seri kuruldu"},
+  {n:8,  t:"oha çok iyi gidiyorsun"},
+  {n:12, t:"durdurulamıyorsun"},
+  {n:16, t:"bu deste sana az geliyor"},
+  {n:20, t:"yirmi kombo. ciddi misin"},
+  {n:25, t:"deste teslim oldu"}
+];
+
+let S = {};
+
+function karistir(a){
+  const d = a.slice();
+  for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}
+  return d;
+}
+
+function basla(){
+  S = {
+    sira: karistir(DESTE),
+    tekrar: [],
+    i: 0,
+    faz: "ana",
+    toplam: DESTE.length,
+    kombo: 0,
+    rekor: 0,
+    bildim: 0, yarim: 0, bilemedim: 0,
+    arka: false,
+    yazi: "",
+    kirik: false,
+    mesaj: ""
+  };
+  ciz();
+}
+
+const el = document.getElementById("app");
+const kacir = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- cetele ---------- */
+function ceteleHtml(){
+  const n = S.kombo;
+  const tamGrup = Math.floor(n/5), kalan = n%5;
+  let g = "";
+  const cizgi = (x)=>`<path d="M${x} 2 L${x} 18"/>`;
+  const capraz = `<path d="M-1 16 L23 4"/>`;
+  for(let k=0;k<tamGrup;k++){
+    g += `<div class="grup"><svg viewBox="0 0 26 20">${cizgi(2)}${cizgi(8)}${cizgi(14)}${cizgi(20)}${capraz}</svg></div>`;
+  }
+  if(kalan>0){
+    let s="";
+    for(let k=0;k<kalan;k++) s += cizgi(2+k*6);
+    g += `<div class="grup"><svg viewBox="0 0 26 20">${s}</svg></div>`;
+  }
+  const sicak = n>=8 ? " sicak" : "";
+  const kirik = S.kirik ? " kirildi" : "";
+  const yazi = S.kirik
+    ? `seri bitti · en yüksek ${S.rekor}`
+    : (S.mesaj ? S.mesaj : (n>0 ? `${n} kombo` : ""));
+  return `<div class="cetele-alan${sicak}${kirik}">
+      <div class="cetele">${g}</div>
+      <div class="kombo-yazi">${kacir(yazi)}</div>
+    </div>`;
+}
+
+/* ---------- ekranlar ---------- */
+function girisEkrani(){
+  el.innerHTML = `
+   <div class="orta">
+     <div>
+       <h1>Hukuk<br>kart <em>destesi</em></h1>
+       <p class="alt" style="margin-top:14px">40 kart, karışık sırayla. Cevabı yaz, kartı çevir, kendini değerlendir.</p>
+     </div>
+     <div class="kural">
+       <div><b>01</b><span>Cevabını önce yaz, sonra çevir. Kendi cümlen karşındayken kendini kandırman zor.</span></div>
+       <div><b>02</b><span>Kimse cevabını kontrol etmiyor. Farklı kelimelerle doğru yazmak serbest.</span></div>
+       <div><b>03</b><span>Üst üste bildiklerin çetele olarak birikir. Bir yanlış çeteleyi siler.</span></div>
+       <div><b>04</b><span>Bilemediğin kartlar seansın sonunda bir kez daha gelir.</span></div>
+     </div>
+     <button class="dolu" onclick="basla()">Desteyi aç</button>
+   </div>`;
+}
+
+function kartEkrani(){
+  const k = S.faz === "ana" ? S.sira[S.i] : S.tekrar[S.i];
+  const toplam = S.faz === "ana" ? S.toplam : S.tekrar.length;
+  const rozet = S.faz === "tekrar" ? `<span class="tekrar-rozet">tekrar</span>` : "";
+
+  let govde, dip;
+  if(!S.arka){
+    govde = `
+      <div class="etiket">soru</div>
+      <div class="soru">${kacir(k.q)}</div>
+      <div class="yazi-alan">
+        <textarea id="yazi" placeholder="cevabını buraya yaz — istersen boş bırak" spellcheck="false">${kacir(S.yazi)}</textarea>
+      </div>`;
+    dip = `
+      <button class="dolu" onclick="cevir()">Kartı çevir</button>
+      <div class="ipucu">yazmadan da çevirebilirsin</div>`;
+  } else {
+    const senin = S.yazi.trim()
+      ? `<div class="senin"><div class="etiket">senin cevabın</div><div class="metin">${kacir(S.yazi.trim())}</div></div>`
+      : "";
+    const not = k.not ? `<div class="not">${kacir(k.not)}</div>` : "";
+    const satirlar = k.a.map(s=>{
+      const m = s.match(/^(\d+)\.\s+(.*)$/);
+      return m ? `<div class="madde"><span>${m[1]}</span><span>${kacir(m[2])}</span></div>`
+               : `<p>${kacir(s)}</p>`;
+    }).join("");
+    govde = `
+      <div class="etiket">soru</div>
+      <div class="soru">${kacir(k.q)}</div>
+      <div class="ayrac"></div>
+      ${senin}
+      <div class="etiket">cevap</div>
+      <div class="cevap">${not}${satirlar}</div>`;
+    dip = `
+      <div class="uclu">
+        <button class="b-bilemedim" onclick="degerlendir('bilemedim')">bilemedim</button>
+        <button class="b-yarim" onclick="degerlendir('yarim')">yarım</button>
+        <button class="b-bildim" onclick="degerlendir('bildim')">bildim</button>
+      </div>
+      <div class="ipucu">yarım komboyu bozmaz ama artırmaz</div>`;
+  }
+
+  el.innerHTML = `
+    <div class="serit">
+      <div class="ilerleme"><b>${S.i+1}</b> / ${toplam}${rozet}</div>
+      ${ceteleHtml()}
+    </div>
+    <div class="sahne">
+      <div class="kart${S.arka?" arka":""}" id="kart">
+        <div class="kart-no">${k.n}</div>
+        ${govde}
+      </div>
+    </div>
+    <div class="dip">${dip}</div>`;
+
+  const t = document.getElementById("yazi");
+  if(t){
+    t.addEventListener("input", e => { S.yazi = e.target.value; });
+    t.addEventListener("keydown", e => {
+      if(e.key === "Enter" && (e.metaKey || e.ctrlKey)) cevir();
+    });
+  }
+}
+
+function bitisEkrani(){
+  el.innerHTML = `
+   <div class="orta">
+     <div>
+       <h1>Deste<br><em>bitti</em></h1>
+       <p class="alt" style="margin-top:14px">Kartlar karışık geliyor, yeniden açtığında sıra değişir.</p>
+     </div>
+     <div class="sayilar">
+       <div><div class="n">${S.bildim}</div><div class="e">bildim</div></div>
+       <div><div class="n">${S.yarim}</div><div class="e">yarım</div></div>
+       <div><div class="n">${S.bilemedim}</div><div class="e">bilemedim</div></div>
+     </div>
+     <div class="rekor">en yüksek kombo — <b>${S.rekor}</b></div>
+     <button class="dolu" onclick="basla()">Yeniden başla</button>
+   </div>`;
+}
+
+/* ---------- akis ---------- */
+function animasyonlu(fn){
+  const kart = document.getElementById("kart");
+  const azHareket = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!kart || azHareket){ fn(); ciz(); return; }
+  kart.classList.add("yarim");
+  setTimeout(()=>{ fn(); ciz(); }, 190);
+}
+
+function cevir(){
+  if(S.arka) return;
+  const t = document.getElementById("yazi");
+  if(t) S.yazi = t.value;
+  animasyonlu(()=>{ S.arka = true; });
+}
+
+function degerlendir(sonuc){
+  S.kirik = false;
+  S.mesaj = "";
+
+  if(sonuc === "bildim"){
+    S.bildim++;
+    S.kombo++;
+    if(S.kombo > S.rekor) S.rekor = S.kombo;
+    const m = MESAJ.filter(x => x.n === S.kombo)[0];
+    if(m) S.mesaj = m.t;
+    else if(S.kombo > 25 && S.kombo % 5 === 0) S.mesaj = `${S.kombo} kombo`;
+  } else if(sonuc === "yarim"){
+    S.yarim++;
+  } else {
+    S.bilemedim++;
+    if(S.kombo > 0) S.kirik = true;
+    S.kombo = 0;
+    const k = S.faz === "ana" ? S.sira[S.i] : S.tekrar[S.i];
+    if(S.faz === "ana") S.tekrar.push(k);
+  }
+
+  animasyonlu(()=>{
+    S.arka = false;
+    S.yazi = "";
+    S.i++;
+    if(S.faz === "ana" && S.i >= S.sira.length){
+      if(S.tekrar.length){ S.faz = "tekrar"; S.i = 0; S.tekrar = karistir(S.tekrar); }
+      else S.faz = "bitti";
+    } else if(S.faz === "tekrar" && S.i >= S.tekrar.length){
+      S.faz = "bitti";
+    }
+  });
+}
+
+function ciz(){
+  if(!S.faz) return girisEkrani();
+  if(S.faz === "bitti") return bitisEkrani();
+  kartEkrani();
+  window.scrollTo(0,0);
+}
+
+girisEkrani();
+</script>
+</body>
+</html>
