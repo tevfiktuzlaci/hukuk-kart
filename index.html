@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Hukuk kart destesi</title>
+<title>Aytunç Quiz</title>
 <meta name="theme-color" content="#EFE9E1">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Kart destesi">
+<meta name="apple-mobile-web-app-title" content="Aytunç Quiz">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
@@ -231,6 +231,134 @@
     .kirildi .grup path{animation:none;opacity:0}
     .kivilcim,.komboBaloncuk{animation-duration:.01s}
   }
+
+  
+/* ---------- kendi notlarin ---------- */
+const NOT_ANAHTAR = "hukukkart_notlar";
+let KENDI = [];
+let notFormAcik = false;
+
+function notYukle(){
+  try{ const k = localStorage.getItem(NOT_ANAHTAR); if(k) KENDI = JSON.parse(k) || []; }catch(e){}
+}
+function notKaydetDepo(){
+  try{ localStorage.setItem(NOT_ANAHTAR, JSON.stringify(KENDI)); }catch(e){}
+}
+function notFormCevir(){
+  notFormAcik = !notFormAcik;
+  defterEkrani();
+  if(notFormAcik){
+    const b = document.getElementById("notBaslik");
+    if(b) b.focus();
+  }
+}
+function notKaydet(){
+  const b = document.getElementById("notBaslik");
+  const m = document.getElementById("notMetin");
+  const metin = m ? m.value.trim() : "";
+  if(!metin) return;
+  KENDI.push({ id: Date.now(), b: (b ? b.value.trim() : ""), m: metin });
+  notKaydetDepo();
+  notFormAcik = false;
+  defterEkrani();
+}
+function notSil(id){
+  KENDI = KENDI.filter(x => x.id !== id);
+  notKaydetDepo();
+  defterEkrani();
+}
+notYukle();
+
+
+
+
+/* ---------- not defteri ---------- */
+  .defter-tus{
+    width:auto;flex:0 0 auto;padding:6px 10px;font-size:16px;line-height:1;
+    border:none;border-radius:99px;background:rgba(253,251,246,.86);
+    box-shadow:0 2px 6px rgba(60,45,30,.16);backdrop-filter:blur(3px);
+  }
+  .defter-tus:hover{background:#fff}
+  .defter-sayfa{
+    background:rgba(253,251,246,.96);border-radius:12px;padding:22px 20px 20px;
+    box-shadow:0 2px 6px rgba(60,45,30,.14), 0 20px 40px -20px rgba(60,45,30,.5);
+    backdrop-filter:blur(4px);position:relative;overflow:hidden;
+  }
+  .defter-sayfa::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--turuncu);opacity:.6;
+  }
+  .defter-baslik{
+    font-family:"Fredoka",sans-serif;font-size:23px;font-weight:600;color:var(--murekkep);
+    margin-bottom:4px;
+  }
+  .defter-alt{font-family:"Source Serif 4",Georgia,serif;font-size:14px;color:var(--soluk);margin-bottom:18px}
+  .defter-grup{
+    font-family:"Fredoka",sans-serif;font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--soluk);margin:18px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--cizgi);
+  }
+  .defter-grup:first-of-type{margin-top:0}
+  .not-satir{margin-bottom:13px}
+  .not-satir .b{font-family:"Fredoka",sans-serif;font-size:12px;color:var(--turuncu);margin-bottom:2px}
+  .not-satir .m{font-family:"Source Serif 4",Georgia,serif;font-size:16px;line-height:1.5;color:var(--murekkep)}
+  .defter-govde{max-height:58dvh;overflow-y:auto;padding-right:4px}
+
+  /* ---------- kendi notlarin ---------- */
+  .defter-ust{display:flex;align-items:flex-start;gap:11px;margin-bottom:4px}
+  .ekle-tus{
+    width:auto;flex:0 0 auto;padding:0;border:none;border-radius:50%;
+    width:34px;height:34px;font-size:22px;line-height:1;
+    background:var(--turuncu);color:#fff;box-shadow:0 2px 6px rgba(60,45,30,.25);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ekle-tus.acik{background:var(--soluk)}
+  .not-form{
+    background:#FAF6EC;border-radius:9px;padding:12px;margin-bottom:16px;
+    box-shadow:inset 0 0 0 1.5px var(--cizgi);
+  }
+  .not-form input, .not-form textarea{
+    width:100%;background:#fff;border:none;border-radius:6px;padding:9px 11px;
+    box-shadow:inset 0 0 0 1.5px var(--cizgi);color:var(--murekkep);outline:none;margin-bottom:8px;
+  }
+  .not-form input{font-family:"Fredoka",sans-serif;font-size:14px}
+  .not-form textarea{font-family:"Source Serif 4",Georgia,serif;font-size:15px;line-height:1.55;min-height:78px;resize:vertical}
+  .not-form input:focus, .not-form textarea:focus{box-shadow:inset 0 0 0 2px var(--amber)}
+  .not-form .sira{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .not-form button{padding:10px;font-size:14px;border-radius:8px}
+  .not-satir{position:relative;padding-right:26px}
+  .not-sil{
+    position:absolute;top:-2px;right:-4px;width:24px;height:24px;padding:0;
+    border:none;background:none;box-shadow:none;color:var(--soluk);font-size:17px;line-height:1;
+  }
+  .not-sil:hover{color:var(--bordo)}
+  .bos-not{font-family:"Source Serif 4",Georgia,serif;font-size:14px;color:var(--soluk);font-style:italic}
+
+  .defter-ust{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+  .ekle-tus{
+    width:auto;flex:0 0 auto;padding:6px 13px 8px;font-size:19px;line-height:1;
+    border:none;border-radius:99px;background:var(--turuncu);color:#fff;
+    box-shadow:0 2px 0 rgba(60,45,30,.18), 0 4px 10px rgba(60,45,30,.22);
+  }
+  .ekle-tus.acikken{background:var(--soluk)}
+  .yeni-not{
+    background:#FBF3DF;border-left:3px solid var(--amber);border-radius:6px;
+    padding:12px 13px;margin-bottom:16px;
+  }
+  .yeni-not input,.yeni-not textarea{
+    width:100%;background:#fff;border:none;border-radius:5px;
+    box-shadow:inset 0 0 0 1.5px var(--cizgi);padding:9px 11px;outline:none;
+    color:var(--murekkep);margin-bottom:8px;
+  }
+  .yeni-not input{font-family:"Fredoka",sans-serif;font-size:14px}
+  .yeni-not textarea{font-family:"Source Serif 4",Georgia,serif;font-size:15px;line-height:1.55;min-height:74px;resize:vertical}
+  .yeni-not input:focus,.yeni-not textarea:focus{box-shadow:inset 0 0 0 2px var(--amber)}
+  .yeni-not button{font-size:14px;padding:10px 14px}
+  .not-satir{position:relative}
+  .not-satir .sil{
+    position:absolute;top:-2px;right:0;width:auto;padding:2px 7px 4px;font-size:15px;line-height:1;
+    border:none;background:none;box-shadow:none;color:#C9BFAC;
+  }
+  .not-satir .sil:hover{color:var(--bordo)}
+  .defter-bos{font-family:"Source Serif 4",Georgia,serif;font-size:15px;color:var(--soluk);font-style:italic}
 </style>
 </head>
 <body>
@@ -379,6 +507,48 @@ const DESTE = [
  {n:137,q:"Cinsel taciz devlet memurluğuna engel suç mudur?",a:["Engel suç değildir"]},
  {n:138,q:"Muhtar ve ihtiyar heyeti mal bildiriminde bulunmak zorunda mıdır?",a:["Zorunda değildir"]},
  {n:139,q:"Usule uygun istifa sonucu çekilmiş sayılanlar ne kadar süre memurluğa alınamaz?",a:["6 ay çekilmiş sayılanlar 1 yıl içinde memurluğa alınamazlar"]}
+,
+ {n:140,q:"Taksirli suçtan hükümlü olmak memuriyete engel midir?",a:["Engel değildir"]},
+ {n:141,q:"Mal bildirimi hangi yıllarda ve ne zamana kadar yapılır?",a:["Sonu 0 veya 5 ile biten yıllarda, şubat ayının sonuna kadar"]},
+ {n:142,q:"Sözleşme yapılmadan önce ihale üzerinde kalan istekliden ne oranında teminat alınır?",a:["Yüzde 6"]},
+ {n:143,q:"İhale hangi durumlarda iptal edilir? (2 madde)",a:["1. Davet edilecek aday sayısı 5'ten az ise","2. İstekli sayısı 3'ten az ise"]},
+ {n:144,q:"Kamu Denetçiliği Kurumu hangi faaliyetleri denetleyemez? (3 madde)",a:["1. Yasama faaliyetleri","2. Yargı faaliyetleri","3. Türk Silahlı Kuvvetlerinin faaliyetleri"]},
+ {n:145,q:"Kamu İhale Kurumuna itirazen şikayet ne kadar sürede yapılır?",a:["5 gün içinde"]},
+ {n:146,q:"Yüksek maliyetli, ileri bilgi ve teknoloji içeren ihaleler hangi usulle yapılır?",a:["Belli istekliler arasında ihale usulü"]},
+ {n:147,q:"Danıştay başkanı, savcısı, başkanvekili ve daire başkanı olabilmek için ne kadar Danıştay üyeliği yapmak gerekir?",a:["Başkan veya savcı olabilmek için 6 yıl","Başkanvekili veya daire başkanı olabilmek için 3 yıl"]},
+ {n:148,q:"Danıştay imtiyaz sözleşmesine görüşünü ne kadar sürede bildirir?",a:["2 ay içinde"]},
+ {n:149,q:"Vergi benzeri mali yükümlülükler ve ödevler hakkında Danıştay ile Sayıştay arasındaki uyuşmazlıklarda hangi karar esas alınır?",a:["Danıştay kararı"]},
+ {n:150,q:"Konusu belli parayı içeren idari işlemlere karşı açılan iptal ve tam yargı davaları kim tarafından çözümlenir?",a:["İdare mahkemesi hakimlerinden biri tarafından (tek hakimle)"]},
+ {n:151,q:"Uyuşmazlık Mahkemesi hüküm uyuşmazlığı bulunan kararları hangi sıfatla karara bağlar?",a:["Anlaşmazlığın esasını ilk ve son derece mahkemesi olarak karara bağlar"]},
+ {n:152,q:"Sayıştay kararlarına karşı temyiz ve karar düzeltme süreleri nedir?",a:["Temyiz 60 gün, karar düzeltme 15 gün içinde"]},
+ {n:153,q:"Danıştay genel sekreterini kim seçer?",a:["Danıştay başkanı kendi seçer"]},
+ {n:154,q:"İstinaf ve temyiz aşamasında yürütmenin durdurulması istemleri hakkında verilen kararların niteliği nedir?",a:["Kesindir"]},
+ {n:155,q:"Yüksek disiplin kurulu kararlarına karşı ne kadar sürede dava açılabilir?",a:["Tebliğden itibaren 15 gün içinde"]},
+ {n:156,q:"Zarar bayındırlık ve ulaştırma hizmetleri ile ilgili ise hangi yer mahkemesi görevlidir?",a:["Hizmetin görüldüğü veya eylemin yapıldığı yer mahkemesi"]},
+ {n:157,q:"İdari eylem kaynaklı zararlarda ve tam yargı davasında ön karar zorunluluğu nasıldır?",a:["İdari eylem kaynaklı zararlarda ön karar almak zorunludur; tam yargı davasında durum böyle değildir"]},
+ {n:158,q:"Sulh yoluna başvurmanın dava açma süresine etkisi nedir?",a:["Dava açma süresini 60 gün durdurur"]},
+ {n:159,q:"İptal davalarında dava açmadan önce idareye başvuru zorunlu mudur?",a:["Zorunlu değildir; Kamu İhale Kanunu kapsamındaki konular istisnadır"]},
+ {n:160,q:"Tazminat ve vergi davalarında tebliğ tarihi ile ödeme tarihi arasındaki fark neye göre ödenir?",a:["Tecil faizi üzerinden"]},
+ {n:161,q:"İdari eylemden kaynaklı zararlarda idareye başvuru ve dava süreleri nedir?",a:["Zararın öğrenilmesinden itibaren 1 yıl, her hâlde 5 yıl içinde idareye başvurulmalı; bu başvuruya verilen karara karşı 30 gün içinde dava açılmalıdır"]}
+,
+ {n:162,q:"Aynı tüzel kişilik içinde bulunanlardan birinin, diğerinin işlemiyle ilgili dava açması hangi yönden sakatlıktır?",a:["Ehliyet yönünden sakatlık"]},
+ {n:163,q:"Hangi hallerde 15 gün içinde vergi mahkemesinde dava açılabilir? (3 madde, hepsini say)",a:["1. Vergi Usul Kanunu'na göre götürü matrahlar hakkındaki takdir komisyonu kararlarına karşı","2. Takdir komisyonlarının arsalara ait asgari ölçüde birim değer tespitlerine ilişkin takdirlerine karşı; il ve ilçe ticaret odaları, ziraat odaları, ilgili mahalle ve köy muhtarlıkları ve vergi daireleri tarafından","3. Amme Alacaklarının Tahsil Usulü Hakkındaki Kanun'a göre yükümlüler ödeme emirlerine karşı"]},
+ {n:164,q:"Emlak vergisi genel beyanında kullanılmak üzere bina inşaat maliyetleri hakkında yapılan tespitlere karşı kim, nerede, ne kadar sürede dava açar?",a:["Odalar Birliği tarafından, Danıştay'da, 15 gün içinde"]},
+ {n:165,q:"Vergi Usul Kanunu'na göre uzlaşma yoluna başvuran yükümlüler, uzlaşma yapılamaması durumunda ne kazanır?",a:["15 günlük ek bir dava süresi"]},
+ {n:166,q:"Danıştay Yüksek Disiplin Kurulu kararlarına ve RTÜK'ün idari yaptırım kararlarına karşı dava açma süresi nedir?",a:["Her ikisinde de 15 gün"]},
+ {n:167,q:"Hangi hallerde dava açma süresi 30 gündür? (2 madde)",a:["1. Türk Petrol Kanunu'na göre Petrol İşleri Genel Müdürlüğünce verilen idari para cezaları nedeniyle açılacak idari davalarda","2. Kamulaştırma Kanunu'na göre kamulaştırma işlemlerine karşı (Asliye Hukuk Mahkemesinin yaptığı tebliğden itibaren)"]},
+ {n:168,q:"Anayasa Mahkemesi kaç üyeden oluşur ve bu üyeleri kim seçer?",a:["15 üyeden oluşur; 12'sini Cumhurbaşkanı, 3'ünü TBMM seçer."],notSon:"Hakimler ve Savcılar Kurulunun Anayasa Mahkemesine üye seçme yetkisi yoktur."},
+ {n:169,q:"Danıştay üyelerini kim seçer?",a:["Dörtte üçünü, birinci sınıf idari yargı hakim ve savcıları ile bu meslekten sayılanlar arasından Hakimler ve Savcılar Kurulu; dörtte birini, nitelikleri kanunda belirtilen görevliler arasından Cumhurbaşkanı seçer"]},
+ {n:170,q:"Yargıtay üyelerini kim, hangi usulle seçer?",a:["Birinci sınıfa ayrılmış adli yargı hakim ve Cumhuriyet savcıları ile bu meslekten sayılanlar arasından, Hakimler ve Savcılar Kurulunca üye tamsayısının salt çoğunluğu ile ve gizli oyla seçilir. Bütün üyeleri Hakimler ve Savcılar Kurulu tarafından seçilir."]},
+ {n:171,q:"Sayıştay başkan ve üyelerini kim seçer?",a:["Tamamı TBMM tarafından seçilir"]},
+ {n:172,q:"Uyuşmazlık Mahkemesi kaç üyeden kurulur ve üyeleri nasıl seçilir?",a:["Bir başkan ile altı asıl, altı yedek üyeden kurulur.","Başkanı Anayasa Mahkemesince kendi üyeleri arasından seçilir.","Yargıtay Hukuk Genel Kurulu ile Danıştay Genel Kurulunca kendi daire başkan ve üyeleri arasından üçer asıl, üçer yedek üye seçilir."]},
+ {n:173,q:"Yasama kısıntısı ve yargı kısıntısı nedir?",a:["Yasama kısıntısı: yasama organının anayasa ile idarenin bazı işlemlerini yargı denetimi dışına çıkarmasıdır.","Yargı kısıntısı: yargı organlarının bazı idari tasarrufları siyasi, yani hükümet tasarrufu olduğu gerekçesiyle denetlemekten kaçınmasıdır."],notSon:"Çağdaş hukuk devleti anlayışında hükümet tasarrufu teorisinin, yani yargı kısıntısının yeri yoktur."},
+ {n:174,q:"1982 Anayasası'nda yer alan yasama kısıntıları nelerdir? (4 madde, hepsini say)",a:["1. Yüksek Askeri Şûra'nın terfi işlemleri ile kadrosuzluk nedeniyle emekliye ayırma işlemleri","2. Hakimler ve Savcılar Kurulunun meslekten çıkarma cezası hariç diğer kararları","3. Seferberlik ve savaş zamanında yüksek disiplin kurulları tarafından subay, astsubay, uzman erbaş ile sözleşmeli erbaş ve erler hakkında verilen, silahlı kuvvetlerden ayırma cezası hariç 6413 sayılı kanundaki diğer bütün disiplin cezaları","4. Spor federasyonlarının spor faaliyetlerinin yönetimine ve disiplinine ilişkin kararları ile bu kararlara karşı başvuru üzerine Tahkim Kurulu tarafından verilen kararlar"]}
+];
+
+const NOTLAR = [
+  {grup:"Kodlamalar",satirlar:[{b:"Danıştay üyelik süreleri",m:"başkanlık organizatör başkanlar aile büyükleri"},{b:"Danıştay genel sekreteri",m:"sekreterini siken çayını kendi alır ❤️"},{b:"Anayasada yer alan kurumlar tablosu",m:"TÜBİTAK"}]},
+  {grup:"Kısa notlar",satirlar:[{b:"Danıştay 1. Dairesi",m:"İdari dairedir, yargısal görevi yoktur."},{b:"Sayıştay kararları",m:"Sayıştay tarafından verilen kararlara karşı Danıştaya itiraz edilemez."}]}
 ];
 
 const MESAJ = [
@@ -519,7 +689,7 @@ function girisEkrani(){
   el.innerHTML = `
    <div class="orta">
      <div class="pano">
-       <h1>Hukuk<br>kart <em>destesi</em></h1>
+       <h1>Aytunç<br><em>Quiz</em></h1>
        <p class="alt">${DESTE.length} kart, karışık sırayla. Cevabı yaz, kartı çevir, kendini değerlendir.</p>
      <div class="kural">
        <div><b>01</b><span>Cevabını önce yaz, sonra çevir. Kendi cümlen karşındayken kendini kandırman zor.</span></div>
@@ -531,6 +701,7 @@ function girisEkrani(){
      </div></div>
      <div style="display:flex;flex-direction:column;gap:9px">
        <button class="dolu" onclick="basla('hepsi')">Desteyi aç — ${DESTE.length} kart</button>
+       <button onclick="defterAc()">\uD83D\uDCD2 Not defteri</button>
        <button onclick="basla('yildiz')" ${yildizli ? "" : "disabled"}>★ Yıldızlıları çalış — ${yildizli} kart</button>
      </div>
    </div>`;
@@ -565,6 +736,7 @@ function gecmisEkrani(){
     <div class="serit">
       <div class="sol">
         <button class="menu-tus" onclick="basaDon()" aria-label="başa dön">⌂</button>
+        <button class="defter-tus" onclick="defterAc()" aria-label="not defteri">\uD83D\uDCD2</button>
         <div class="ilerleme">geçmiş · <b>${S.bakis+1}</b> / ${S.gecmis.length}</div>
       </div>
       <div class="cetele-alan"><div class="kombo-yazi">puan değişmez</div></div>
@@ -591,6 +763,110 @@ function gecmisEkrani(){
       <button class="dolu" onclick="gecmistenCik()">Kaldığım yere dön</button>
     </div>`;
   window.scrollTo(0,0);
+}
+
+
+/* ---------- not defteri ---------- */
+let defterAcik = false;
+
+/* ---------- kullanicinin kendi notlari ---------- */
+const NOT_ANAHTAR = "hukukkart_notlar";
+let BENIM_NOTLAR = [];
+let notFormu = false;
+
+function notlariYukle(){
+  try{
+    const k = localStorage.getItem(NOT_ANAHTAR);
+    if(k) BENIM_NOTLAR = JSON.parse(k) || [];
+  }catch(e){ BENIM_NOTLAR = []; }
+}
+function notlariKaydet(){
+  try{ localStorage.setItem(NOT_ANAHTAR, JSON.stringify(BENIM_NOTLAR)); }catch(e){}
+}
+function notFormuAc(){
+  notFormu = !notFormu;
+  defterEkrani();
+  if(notFormu){
+    const b = document.getElementById("notBaslik");
+    if(b) b.focus();
+  }
+}
+function notKaydet(){
+  const b = document.getElementById("notBaslik");
+  const m = document.getElementById("notMetin");
+  const baslik = b ? b.value.trim() : "";
+  const metin  = m ? m.value.trim() : "";
+  if(!metin && !baslik) return;
+  BENIM_NOTLAR.push({ b: baslik || "Not", m: metin || baslik, t: Date.now() });
+  notlariKaydet();
+  notFormu = false;
+  defterEkrani();
+}
+function notSil(i){
+  BENIM_NOTLAR.splice(i, 1);
+  notlariKaydet();
+  defterEkrani();
+}
+notlariYukle();
+
+function defterEkrani(){
+  const hazir = NOTLAR.map(g => `
+    <div class="defter-grup">${kacir(g.grup)}</div>
+    ${g.satirlar.map(x => `
+      <div class="not-satir">
+        <div class="b">${kacir(x.b)}</div>
+        <div class="m">${kacir(x.m)}</div>
+      </div>`).join("")}
+  `).join("");
+
+  const benim = `
+    <div class="defter-grup">Kendi notlarım</div>
+    ${BENIM_NOTLAR.length
+      ? BENIM_NOTLAR.map((x,i) => `
+        <div class="not-satir">
+          <button class="sil" onclick="notSil(${i})" aria-label="notu sil">\u00d7</button>
+          <div class="b">${kacir(x.b)}</div>
+          <div class="m">${kacir(x.m)}</div>
+        </div>`).join("")
+      : `<div class="defter-bos">Henüz not yok. Sol üstteki + ile ekleyebilirsin.</div>`}
+  `;
+
+  const form = notFormu ? `
+    <div class="yeni-not">
+      <input id="notBaslik" placeholder="başlık — örn. Danıştay üyelik süreleri" maxlength="60" spellcheck="false">
+      <textarea id="notMetin" placeholder="notun ya da kodlaman" spellcheck="false"></textarea>
+      <button class="dolu" onclick="notKaydet()">Kaydet</button>
+    </div>` : "";
+
+  el.innerHTML = `
+   <div class="orta">
+     <div class="defter-sayfa">
+       <div class="defter-ust">
+         <div>
+           <div class="defter-baslik">Not defteri</div>
+           <div class="defter-alt" style="margin:0">Kodlamalar ve kısa notlar.</div>
+         </div>
+         <button class="ekle-tus${notFormu ? " acikken" : ""}" onclick="notFormuAc()" aria-label="not ekle">${notFormu ? "\u00d7" : "+"}</button>
+       </div>
+       ${form}
+       <div class="defter-govde">${benim}${hazir}</div>
+     </div>
+     <button class="dolu" onclick="defterKapat()">Kapat</button>
+   </div>`;
+  window.scrollTo(0,0);
+}
+
+function defterAc(){
+  notFormAcik = false;
+  const t = document.getElementById("yazi");
+  if(t && S.faz) S.yazi = t.value;
+  defterAcik = true;
+  defterEkrani();
+}
+function defterKapat(){
+  defterAcik = false;
+  notFormu = false;
+  if(S.faz) ciz(); else girisEkrani();
 }
 
 function basaDon(){
@@ -656,6 +932,7 @@ function kartEkrani(){
     <div class="serit">
       <div class="sol">
         <button class="menu-tus" onclick="basaDon()" aria-label="başa dön">⌂</button>
+        <button class="defter-tus" onclick="defterAc()" aria-label="not defteri">\uD83D\uDCD2</button>
         ${S.gecmis.length ? `<button class="geri-tus" onclick="gecmiseGit()" aria-label="önceki karta bak">‹ geri</button>` : ""}
         <div class="ilerleme"><b>${S.i+1}</b> / ${toplam}${rozet}</div>
       </div>
@@ -756,6 +1033,7 @@ function degerlendir(sonuc){
 }
 
 function ciz(){
+  if(defterAcik) return defterEkrani();
   if(!S.faz) return girisEkrani();
   if(S.bakis !== null && S.bakis !== undefined) return gecmisEkrani();
   if(S.faz === "bitti") return bitisEkrani();
